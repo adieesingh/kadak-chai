@@ -60,7 +60,7 @@ model EntryEvent {
   type      String   // "submitted" | "ai_decided" | "ai_failed" | "admin_override"
   fromStatus String?
   toStatus   String?
-  meta      String?  // JSON string: error message, admin note, etc.
+  meta      String?  
   createdAt DateTime @default(now())
 
   @@index([entryId, createdAt])
