@@ -13,7 +13,7 @@ export const entryInputSchema  =z.object({
 
 export type EntryInput = z.infer<typeof entryInputSchema>;
 
-export function normalizeCount(raw:string){
+export function normalizeContact(raw:string){
     const v = raw.trim();
      if (v.includes("@")) {
     const ok = z.string().email().safeParse(v).success;

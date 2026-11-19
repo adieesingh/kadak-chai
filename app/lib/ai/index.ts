@@ -4,6 +4,7 @@ import type { AiProvider } from "./providers/types";
 import { mockProvider } from "./providers/mock";
 import { createOpenAiCompatibleProvider } from "./providers/openai-compatible";
 
+
 const TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS ?? 8000);
 
 function getProvider(): AiProvider | { configError: string } {

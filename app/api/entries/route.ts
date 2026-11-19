@@ -1,5 +1,6 @@
+import { moderateStory } from "@/app/lib/ai";
 import { prisma } from "@/app/lib/db";
-import { entryInputSchema } from "@/app/lib/validation";
+import { entryInputSchema, normalizeContact } from "@/app/lib/validation";
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
