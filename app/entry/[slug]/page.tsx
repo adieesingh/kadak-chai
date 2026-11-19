@@ -30,15 +30,15 @@ export default async function EntryPage({ params }: Props) {
   if (!entry || !entry.aiCaption) notFound();
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6 bg-amber-50">
-      <article className="max-w-md w-full text-center border-4 border-amber-900 p-8 bg-white">
-        <p className="text-sm tracking-widest text-amber-800">☕ #MyChaiBreak</p>
-        <blockquote className="my-8 text-2xl font-semibold leading-snug">
-          “{entry.aiCaption}”
-        </blockquote>
-        <p className="text-lg">, {firstName(entry.name)}</p>
-        <p className="text-xs mt-1 text-amber-800">Kadak Chai Co.</p>
-      </article>
-    </main>
+  <main className="min-h-screen flex items-center justify-center p-6 bg-orange-100">
+  <article className="max-w-md w-full text-center border-4 border-orange-950 p-8 bg-orange-50 text-stone-900">
+    <p className="text-sm tracking-widest text-orange-800">☕ #MyChaiBreak</p>
+    <blockquote className="my-8 text-2xl font-semibold leading-snug text-orange-950">
+      “{entry.aiCaption}”
+    </blockquote>
+    <p className="text-lg text-stone-800"> {firstName(entry.name)}</p>
+    <p className="text-xs mt-1 text-orange-800">Kadak Chai Co.</p>
+  </article>
+</main>
   );
 }
