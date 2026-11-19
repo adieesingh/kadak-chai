@@ -35,6 +35,7 @@ model Entry {
   aiRaw    String?
   aiError String?
   aiProvider  String?
+  aiCaption    String?
 
   // Admin override
   overriddenBy  String?

@@ -5,10 +5,7 @@ export const DECISIONS = ["approved", "rejected"] as const;
 
 const countWords = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
 
-/**
- * Shape the LLM MUST return. Anything else is treated as an AI failure
- * and the entry is saved as pending_review.
- */
+
 export const aiResponseSchema = z
   .object({
     decision: z.enum(DECISIONS),
