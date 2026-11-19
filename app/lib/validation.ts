@@ -7,7 +7,7 @@ export const entryInputSchema  =z.object({
     city:z.string().trim().min(2).max(60),
     contact:z.string().trim().min(5).max(100),
     story:z.string().trim().min(10,"Story too short").refine((s)=>counterChars(s)<=300,"Max 300 charter"),
-        
+    consent: z.literal(true, { error: "Consent required" })                            
 
 })
 

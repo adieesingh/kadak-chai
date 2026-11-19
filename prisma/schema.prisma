@@ -22,7 +22,7 @@ model Entry {
   contact String
   contactType String
   story   String
-  conset  String
+  consent  Boolean
 
 
   //status
