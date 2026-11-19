@@ -50,9 +50,9 @@ export async function POST(req:Request){
       return NextResponse.json(
         { error: "This email/phone has already entered." },
         { status: 409 }
-      );
+      );  
     }
-    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+    return NextResponse.json({ error: `${e}Something went wrong. Please try again.` }, { status: 500 });
   }
 
   // 6. AI step, kabhi throw nahi karega (result object return karta hai)
