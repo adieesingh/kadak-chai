@@ -1,17 +1,24 @@
 import { NextResponse } from "next/server";
 import { checkCredentials, createSessionToken, SESSION_COOKIE, SESSION_TTL_MS } from "@/app/lib/admin/session";
-
-// Very small in-memory brute-force guard (per IP). Production: Redis.
-const attempts = new Map<string, { n: number; resetAt: number }>();
-const MAX = 5;
-const WINDOW_MS = 10 * 60 * 1000;
+import { loginLimiter, getClientIp } from "@/app/lib/ratelimit";
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const now = Date.now();
-  const rec = attempts.get(ip);
-  if (rec && rec.resetAt > now && rec.n >= MAX) {
-    return NextResponse.json({ error: "Too many attempts. Try later." }, { status: 429 });
+  const ip = getClientIp(req);
+  const rateLimit = await loginLimiter.limit(ip);
+
+  if (!rateLimit.success) {
+    const retryAfter = Math.max(1, Math.ceil((rateLimit.reset - Date.now()) / 1000));
+    return NextResponse.json(
+      { error: "Too many login attempts. Try later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": retryAfter.toString(),
+          "X-RateLimit-Limit": rateLimit.limit.toString(),
+          "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+        },
+      }
+    );
   }
 
   let body: { username?: unknown; password?: unknown } = {};
@@ -24,13 +31,9 @@ export async function POST(req: Request) {
   const password = typeof body.password === "string" ? body.password : "";
 
   if (!checkCredentials(username, password)) {
-    const cur = rec && rec.resetAt > now ? rec : { n: 0, resetAt: now + WINDOW_MS };
-    cur.n += 1;
-    attempts.set(ip, cur);
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  attempts.delete(ip);
   const res = NextResponse.json({ ok: true });
   res.cookies.set(SESSION_COOKIE, createSessionToken(), {
     httpOnly: true,

@@ -1,12 +1,32 @@
 import { moderateStory } from "@/app/lib/ai";
 import { prisma } from "@/app/lib/db";
 import { entryInputSchema, normalizeContact } from "@/app/lib/validation";
+import { entryLimiter, getClientIp, hashIp } from "@/app/lib/ratelimit";
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
-export async function POST(req:Request){
-        let body: unknown;
+export async function POST(req: Request) {
+  // 1. Rate limiting check (prevents AI cost exhaustion & DB spam)
+  const clientIp = getClientIp(req);
+  const rateLimit = await entryLimiter.limit(clientIp);
+
+  if (!rateLimit.success) {
+    const retryAfter = Math.max(1, Math.ceil((rateLimit.reset - Date.now()) / 1000));
+    return NextResponse.json(
+      { error: "Too many story submissions. Please try again later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": retryAfter.toString(),
+          "X-RateLimit-Limit": rateLimit.limit.toString(),
+          "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+        },
+      }
+    );
+  }
+
+  let body: unknown;
         try {
             body = await req.json();  
         } catch {
@@ -43,6 +63,7 @@ export async function POST(req:Request){
         contactType: contact.type,
         story: input.story,
         consent: input.consent,
+        ipHash: hashIp(clientIp),
         status: "pending_review",
       },
     });
