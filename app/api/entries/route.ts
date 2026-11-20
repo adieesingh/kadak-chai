@@ -6,11 +6,11 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
 export async function POST(req:Request){
-        let body:unknown;
+        let body: unknown;
         try {
-            body=await req.json();  
-        } catch (error) {
-            return NextResponse.json({error:"Invalid request"},{status:400})
+            body = await req.json();  
+        } catch {
+            return NextResponse.json({ error: "Invalid request" }, { status: 400 });
         }
 
         const parsed = entryInputSchema.safeParse(body);
@@ -46,14 +46,14 @@ export async function POST(req:Request){
         status: "pending_review",
       },
     });
-  } catch (e: any) {
-    if (e?.code === "P2002") {
+  } catch (e: unknown) {
+    if (typeof e === "object" && e !== null && "code" in e && (e as { code: string }).code === "P2002") {
       return NextResponse.json(
         { error: "This email/phone has already entered." },
         { status: 409 }
       );  
     }
-    return NextResponse.json({ error: `${e}Something went wrong. Please try again.` }, { status: 500 });
+    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 
   // 6. AI step, kabhi throw nahi karega (result object return karta hai)

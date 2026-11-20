@@ -4,7 +4,33 @@ import { useRouter } from "next/navigation";
 
 type Status = "approved" | "rejected" | "pending_review";
 
-export default function OverrideControls({ id, status, hasCaption }: { id: string; status: string; hasCaption: boolean }) {
+const BUTTON_CONFIG: Record<Status, { label: string; className: string }> = {
+  approved: {
+    label: "Approve",
+    className:
+      "bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-600 hover:border-emerald-700",
+  },
+  rejected: {
+    label: "Reject",
+    className:
+      "bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-600 hover:border-rose-700",
+  },
+  pending_review: {
+    label: "Mark Pending",
+    className:
+      "bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-600 hover:border-amber-700",
+  },
+};
+
+export default function OverrideControls({
+  id,
+  status,
+  hasCaption,
+}: {
+  id: string;
+  status: string;
+  hasCaption: boolean;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -34,15 +60,30 @@ export default function OverrideControls({ id, status, hasCaption }: { id: strin
   }
 
   return (
-    <div className="mt-2 flex flex-wrap gap-2 items-center">
+    <div className="flex flex-wrap gap-2 items-center">
       {(["approved", "rejected", "pending_review"] as Status[])
         .filter((s) => s !== status)
-        .map((s) => (
-          <button key={s} disabled={busy} onClick={() => set(s)} className="text-xs border rounded px-2 py-1 disabled:opacity-50">
-            Mark {s}
-          </button>
-        ))}
-      {error && <span role="alert" className="text-xs text-red-600">{error}</span>}
+        .map((s) => {
+          const cfg = BUTTON_CONFIG[s];
+          return (
+            <button
+              key={s}
+              disabled={busy}
+              onClick={() => set(s)}
+              className={`text-xs font-semibold px-2.5 py-1 rounded-md shadow-2xs transition disabled:opacity-50 cursor-pointer ${cfg.className}`}
+            >
+              {cfg.label}
+            </button>
+          );
+        })}
+      {error && (
+        <span
+          role="alert"
+          className="text-xs font-semibold bg-rose-50 border border-rose-300 text-rose-900 px-2 py-0.5 rounded"
+        >
+          {error}
+        </span>
+      )}
     </div>
   );
 }

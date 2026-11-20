@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-const counterChars =(s:String)=>[...s].length;
+const counterChars = (s: string) => [...s].length;
 
 export const entryInputSchema  =z.object({
     name:z.string().min(2,"Name too short").max(60),

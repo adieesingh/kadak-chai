@@ -5,17 +5,30 @@ import { entryInputSchema, normalizeContact } from "@/app/lib/validation";
 const MAX_STORY = 300;
 type Errors = Partial<Record<"name" | "city" | "contact" | "story" | "consent", string>>;
 
-const input =
-  "w-full border-2 border-amber-900/30 focus:border-amber-900 rounded-lg px-3 py-3 text-base bg-white outline-none";
+const PROMPT_IDEAS = [
+  "Monsoon tapri chai 🌧️",
+  "3 AM late night study chai 📚",
+  "4 PM office gossip break 💼",
+  "Highway dhaba kulhad chai 🛣️",
+];
 
 export default function EntryForm() {
   const [story, setStory] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [formError, setFormError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState<null | { message: string }>(null);
+  const [done, setDone] = useState<null | { message: string; shareUrl?: string }>(null);
 
-  const used = [...story].length; // code points, same as the server
+  const used = [...story].length;
+  const progressPercent = Math.min(100, Math.round((used / MAX_STORY) * 100));
+
+  function addPrompt(text: string) {
+    if (story.length === 0) {
+      setStory(`My favourite chai break is ${text.toLowerCase()}: `);
+    } else {
+      setStory((prev) => `${prev} (${text})`);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,14 +37,14 @@ export default function EntryForm() {
 
     const fd = new FormData(e.currentTarget);
     const values = {
-      name: String(fd.get("name") ?? ""),
-      city: String(fd.get("city") ?? ""),
-      contact: String(fd.get("contact") ?? ""),
-      story: String(fd.get("story") ?? ""),
+      name: String(fd.get("name") ?? "").trim(),
+      city: String(fd.get("city") ?? "").trim(),
+      contact: String(fd.get("contact") ?? "").trim(),
+      story: story.trim(),
       consent: fd.get("consent") === "on",
     };
 
-    // Client-side validation (UX only. The server validates again.)
+    // Client-side validation
     const parsed = entryInputSchema.safeParse(values);
     const fieldErrors: Errors = {};
     if (!parsed.success) {
@@ -41,7 +54,7 @@ export default function EntryForm() {
       }
     }
     if (!fieldErrors.contact && !normalizeContact(values.contact)) {
-      fieldErrors.contact = "Enter a valid email or phone number";
+      fieldErrors.contact = "Enter a valid email or 10-digit phone number";
     }
     setErrors(fieldErrors);
     if (Object.keys(fieldErrors).length > 0) return;
@@ -58,9 +71,12 @@ export default function EntryForm() {
       if (res.status === 201) {
         if (data.status === "approved" && data.shareUrl) {
           window.location.assign(data.shareUrl);
-          return; // keep the button disabled while navigating
+          return;
         }
-        setDone({ message: data.message ?? "Thanks! We're reviewing your entry." });
+        setDone({
+          message: data.message ?? "Thanks! We're reviewing your chai break entry.",
+          shareUrl: data.shareUrl,
+        });
       } else if (res.status === 400 && data.fields) {
         const serverErrors: Errors = {};
         for (const [k, v] of Object.entries(data.fields as Record<string, string[]>)) {
@@ -70,7 +86,7 @@ export default function EntryForm() {
       } else if (res.status === 409) {
         setFormError("This email or phone number has already entered.");
       } else {
-        setFormError("Something went wrong. Please try again.");
+        setFormError("Something went wrong while brewing. Please try again.");
       }
     } catch {
       setFormError("Network problem. Please check your connection and try again.");
@@ -81,70 +97,207 @@ export default function EntryForm() {
 
   if (done) {
     return (
-      <div role="status" className="text-center border-4 border-amber-900 bg-white rounded-xl p-8">
-        <p className="text-4xl mb-3">☕</p>
-        <p className="text-lg font-semibold">{done.message}</p>
+      <div
+        role="status"
+        className="text-center border-2 border-amber-900/30 bg-amber-50/60 rounded-3xl p-8 sm:p-10 shadow-sm space-y-4"
+      >
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-900 text-white flex items-center justify-center text-3xl shadow-sm">
+          ☕
+        </div>
+        <h2 className="text-2xl font-extrabold text-stone-900">
+          Chai Story Received!
+        </h2>
+        <p className="text-stone-700 max-w-sm mx-auto leading-relaxed text-sm">
+          {done.message}
+        </p>
+        {done.shareUrl && (
+          <a
+            href={done.shareUrl}
+            className="inline-block mt-2 bg-amber-900 hover:bg-amber-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-xs transition"
+          >
+            View Your Poster ↗
+          </a>
+        )}
       </div>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-4">
-      <Field label="Your name" error={errors.name}>
-        <input name="name" autoComplete="name" maxLength={60} className={input} aria-invalid={!!errors.name} />
-      </Field>
+    <div className="bg-white border-2 border-stone-200/90 rounded-3xl p-6 sm:p-8 shadow-sm">
+      <form onSubmit={onSubmit} noValidate className="space-y-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Your Name" error={errors.name} icon="👤">
+            <input
+              name="name"
+              placeholder="e.g. Adarsh Sharma"
+              autoComplete="name"
+              maxLength={60}
+              className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl px-3.5 py-2.5 text-stone-900 text-sm outline-none transition"
+              aria-invalid={!!errors.name}
+            />
+          </Field>
 
-      <Field label="City" error={errors.city}>
-        <input name="city" autoComplete="address-level2" maxLength={60} className={input} aria-invalid={!!errors.city} />
-      </Field>
+          <Field label="City" error={errors.city} icon="📍">
+            <input
+              name="city"
+              placeholder="e.g. Varanasi, Lucknow"
+              autoComplete="address-level2"
+              maxLength={60}
+              className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl px-3.5 py-2.5 text-stone-900 text-sm outline-none transition"
+              aria-invalid={!!errors.city}
+            />
+          </Field>
+        </div>
 
-      <Field label="Email or phone" error={errors.contact}>
-        <input name="contact" autoComplete="email" inputMode="email" maxLength={100} className={input} aria-invalid={!!errors.contact} />
-      </Field>
+        <Field label="Email or Phone Number" error={errors.contact} icon="✉️">
+          <input
+            name="contact"
+            placeholder="you@email.com or 9876543210"
+            autoComplete="email"
+            inputMode="email"
+            maxLength={100}
+            className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl px-3.5 py-2.5 text-stone-900 text-sm outline-none transition"
+            aria-invalid={!!errors.contact}
+          />
+        </Field>
 
-      <Field label="Your chai break story" error={errors.story}>
-        <textarea
-          name="story"
-          rows={5}
-          value={story}
-          onChange={(e) => setStory(e.target.value)}
-          className={input}
-          aria-invalid={!!errors.story}
-        />
-        <p className={`text-xs mt-1 text-right ${used > MAX_STORY ? "text-red-600 font-semibold" : "text-amber-800"}`}>
-          {used}/{MAX_STORY}
-        </p>
-      </Field>
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
+              <span>☕</span> Your Chai Break Story
+            </label>
+            <span
+              className={`text-xs font-semibold ${
+                used > MAX_STORY ? "text-rose-600 font-bold" : "text-stone-500"
+              }`}
+            >
+              {used} / {MAX_STORY}
+            </span>
+          </div>
 
-      <div>
-        <label className="flex items-start gap-3 min-h-11 py-1">
-          <input type="checkbox" name="consent" className="mt-1 h-5 w-5 shrink-0" aria-invalid={!!errors.consent} />
-          <span className="text-sm">
-            I agree that Kadak Chai Co. may feature my first name and story caption publicly.
-          </span>
-        </label>
-        {errors.consent && <p role="alert" className="text-sm text-red-600">{errors.consent}</p>}
-      </div>
+          <textarea
+            name="story"
+            rows={4}
+            value={story}
+            placeholder="Tell us what makes your chai break memorable: who you drink it with, the place, the weather, the conversations..."
+            onChange={(e) => setStory(e.target.value)}
+            className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl p-3.5 text-stone-900 text-sm outline-none transition leading-relaxed resize-none"
+            aria-invalid={!!errors.story}
+          />
 
-      {formError && <p role="alert" className="text-sm text-red-600">{formError}</p>}
+          {/* Character Progress Bar */}
+          <div className="w-full bg-stone-100 rounded-full h-1.5 mt-1 overflow-hidden">
+            <div
+              className={`h-full transition-all duration-200 ${
+                used > MAX_STORY
+                  ? "bg-rose-500"
+                  : used > 250
+                  ? "bg-amber-600"
+                  : "bg-amber-800"
+              }`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
 
-      <button
-        type="submit"
-        disabled={busy}
-        className="w-full min-h-12 rounded-lg bg-amber-900 text-white font-semibold text-base disabled:opacity-60"
-      >
-        {busy ? "Brewing your caption…" : "Share my chai break"}
-      </button>
-    </form>
+          {errors.story && (
+            <p role="alert" className="text-xs font-semibold text-rose-600 mt-1.5">
+              {errors.story}
+            </p>
+          )}
+
+          {/* Quick Idea Chips */}
+          <div className="mt-3">
+            <p className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
+              💡 Need inspiration? Click to add:
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {PROMPT_IDEAS.map((idea) => (
+                <button
+                  key={idea}
+                  type="button"
+                  onClick={() => addPrompt(idea)}
+                  className="text-xs bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 px-2.5 py-1 rounded-lg transition active:scale-95 cursor-pointer"
+                >
+                  {idea}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Consent Checkbox */}
+        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3.5">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="consent"
+              className="mt-0.5 h-4 w-4 shrink-0 rounded text-amber-900 focus:ring-amber-900 border-stone-300"
+              aria-invalid={!!errors.consent}
+            />
+            <span className="text-xs text-stone-700 leading-normal">
+              I agree that Kadak Chai Co. may feature my first name and generated poster line publicly.
+            </span>
+          </label>
+          {errors.consent && (
+            <p role="alert" className="text-xs font-semibold text-rose-600 mt-1.5 ml-7">
+              {errors.consent}
+            </p>
+          )}
+        </div>
+
+        {formError && (
+          <div
+            role="alert"
+            className="bg-rose-50 border border-rose-300 text-rose-950 text-xs font-semibold p-3 rounded-xl"
+          >
+            {formError}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={busy}
+          className="w-full min-h-12 rounded-xl bg-amber-900 hover:bg-amber-800 active:scale-99 text-white font-bold text-sm sm:text-base shadow-sm transition disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+        >
+          {busy ? (
+            <>
+              <span className="animate-spin text-lg">🫖</span>
+              <span>Brewing Your Chai Caption…</span>
+            </>
+          ) : (
+            <>
+              <span>☕ Share My Chai Break</span>
+            </>
+          )}
+        </button>
+      </form>
+    </div>
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  error,
+  icon,
+  children,
+}: {
+  label: string;
+  error?: string;
+  icon?: string;
+  children: React.ReactNode;
+}) {
   return (
     <label className="block">
-      <span className="block text-sm font-medium mb-1">{label}</span>
+      <span className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5 flex items-center gap-1.5">
+        {icon && <span>{icon}</span>}
+        <span>{label}</span>
+      </span>
       {children}
-      {error && <span role="alert" className="block text-sm text-red-600 mt-1">{error}</span>}
+      {error && (
+        <span role="alert" className="block text-xs font-semibold text-rose-600 mt-1.5">
+          {error}
+        </span>
+      )}
     </label>
   );
 }
