@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkCredentials, createSessionToken, SESSION_COOKIE, SESSION_TTL_MS } from "@/lib/admin/session";
+import { checkCredentials, createSessionToken, SESSION_COOKIE, SESSION_TTL_MS } from "@/app/lib/admin/session";
 
 // Very small in-memory brute-force guard (per IP). Production: Redis.
 const attempts = new Map<string, { n: number; resetAt: number }>();
