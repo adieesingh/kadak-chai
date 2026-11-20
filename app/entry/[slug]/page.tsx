@@ -3,8 +3,7 @@ import { firstName } from "@/app/lib/entry";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-type Props = { params: Promise<{ slug: string }> }; // Next 15. Next 14 mein params seedha object hai
-
+type Props = { params: Promise<{ slug: string }> }; 
 async function getEntry(slug: string) {
   if (!/^[A-Za-z0-9_-]{10,40}$/.test(slug)) return null; // junk slug DB tak nahi jaata
   return prisma.entry.findFirst({
