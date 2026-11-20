@@ -1,9 +1,8 @@
 import { prisma } from "@/app/lib/db";
 import { firstName } from "@/app/lib/entry";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-type Props = { params: Promise<{ slug: string }> }; 
 async function getEntry(slug: string) {
   if (!/^[A-Za-z0-9_-]{10,40}$/.test(slug)) return null; // junk slug DB tak nahi jaata
   return prisma.entry.findFirst({
@@ -12,8 +11,10 @@ async function getEntry(slug: string) {
   });
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata(
+  props: PageProps<"/entry/[slug]">
+): Promise<Metadata> {
+  const { slug } = await props.params;
   const entry = await getEntry(slug);
   if (!entry) return { title: "Not found" };
   return {
@@ -23,8 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function EntryPage({ params }: Props) {
-  const { slug } = await params;
+export default async function EntryPage(props: PageProps<"/entry/[slug]">) {
+  const { slug } = await props.params;
   const entry = await getEntry(slug);
   if (!entry || !entry.aiCaption) notFound();
 

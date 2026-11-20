@@ -1,18 +1,17 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { prisma } from "@/app/lib/db";
 import { isAdmin } from "@/app/lib/admin/guard";
 import { STATUSES, CATEGORIES } from "@/app/lib/admin/override";
 import LoginForm from "./LoginForm";
 import OverrideControls from "./OverrideControls";
 
-export const metadata = { title: "Admin", robots: { index: false } };
+export const metadata: Metadata = { title: "Admin", robots: { index: false } };
 
-type Props = { searchParams: Promise<{ status?: string; category?: string }> };
-
-export default async function AdminPage({ searchParams }: Props) {
+export default async function AdminPage(props: PageProps<"/admin">) {
   if (!(await isAdmin())) return <LoginForm />;
 
-  const sp = await searchParams;
+  const sp = await props.searchParams;
   const status = STATUSES.find((s) => s === sp.status);
   const category = CATEGORIES.find((c) => c === sp.category);
 
@@ -86,14 +85,14 @@ export default async function AdminPage({ searchParams }: Props) {
               </div>
             )}
             {e.status === "approved" && (
-              <a
+              <Link
                 className="text-xs underline text-gray-800 hover:text-gray-950"
                 href={`/entry/${e.slug}`}
                 target="_blank"
                 rel="noreferrer"
               >
                 view public page
-              </a>
+              </Link>
             )}
             <OverrideControls id={e.id} status={e.status} hasCaption={!!e.aiCaption} />
           </li>

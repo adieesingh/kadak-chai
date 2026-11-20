@@ -3,6 +3,7 @@ import { prisma } from "@/app/lib/db";
 import { entryInputSchema, normalizeContact } from "@/app/lib/validation";
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req:Request){
         let body:unknown;
@@ -79,6 +80,10 @@ export async function POST(req:Request){
 
   // 7. Response: user ko minimum info
   const approved = result.ok && result.data.decision === "approved";
+  if (approved) {
+    revalidatePath("/admin");
+    revalidatePath(`/entry/${entry.slug}`);
+  }
   return NextResponse.json(
     approved
       ? { ok: true, status: "approved", shareUrl: `/entry/${entry.slug}` }

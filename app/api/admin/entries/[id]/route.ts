@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/lib/db";
 import { isAdmin } from "@/app/lib/admin/guard";
 import { overrideSchema, resolveOverride } from "@/app/lib/admin/override";
 
-type Ctx = { params: Promise<{ id: string }> }; 
-export async function PATCH(req: Request, ctx: Ctx) {
+export async function PATCH(
+  req: Request,
+  ctx: RouteContext<"/api/admin/entries/[id]">
+) {
   if (!(await isAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -48,7 +51,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
     prisma.entry.update({
       where: { id },
       data: { ...result.data, overriddenBy: adminUser, overriddenAt: new Date() },
-      select: { id: true, status: true, aiCaption: true, adminNote: true },
+      select: { id: true, status: true, slug: true, aiCaption: true, adminNote: true },
     }),
     prisma.entryEvent.create({
       data: {
@@ -60,6 +63,11 @@ export async function PATCH(req: Request, ctx: Ctx) {
       },
     }),
   ]);
+
+  revalidatePath("/admin");
+  if (updated.slug) {
+    revalidatePath(`/entry/${updated.slug}`);
+  }
 
   return NextResponse.json({ ok: true, entry: updated });
 }

@@ -1,6 +1,7 @@
 import EntryForm from "@/components/EntryForm";
+import type { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "#MyChaiBreak | Kadak Chai Co.",
   description: "Share your chai break story and get your own shareable poster line.",
 };
