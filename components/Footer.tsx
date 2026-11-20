@@ -26,7 +26,7 @@ export default function Footer() {
               Admin Moderation
             </Link>
             <span>·</span>
-            <span>© {new Date().getFullYear()} Kadak Chai Co.</span>
+            <span>© 2026 Kadak Chai Co.</span>
           </div>
         </div>
       </div>
