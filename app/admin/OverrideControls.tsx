@@ -60,7 +60,7 @@ export default function OverrideControls({
   }
 
   return (
-    <div className="flex flex-wrap gap-2 items-center">
+    <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
       {(["approved", "rejected", "pending_review"] as Status[])
         .filter((s) => s !== status)
         .map((s) => {
@@ -70,7 +70,7 @@ export default function OverrideControls({
               key={s}
               disabled={busy}
               onClick={() => set(s)}
-              className={`text-xs font-semibold px-2.5 py-1 rounded-md shadow-2xs transition disabled:opacity-50 cursor-pointer ${cfg.className}`}
+              className={`text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-md shadow-2xs transition active:scale-95 disabled:opacity-50 cursor-pointer min-h-[32px] sm:min-h-0 flex items-center justify-center touch-manipulation ${cfg.className}`}
             >
               {cfg.label}
             </button>
@@ -79,7 +79,7 @@ export default function OverrideControls({
       {error && (
         <span
           role="alert"
-          className="text-xs font-semibold bg-rose-50 border border-rose-300 text-rose-900 px-2 py-0.5 rounded"
+          className="text-xs font-semibold bg-rose-50 border border-rose-300 text-rose-900 px-2 py-0.5 rounded break-words"
         >
           {error}
         </span>

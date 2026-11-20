@@ -1,12 +1,10 @@
+import { connection } from "next/server";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE, verifySessionToken } from "./session";
 
-/** Use at the top of every admin API route and the admin page. */
+// Admin auth check: Har admin route aur page pe session verify karne ke liye
 export async function isAdmin(): Promise<boolean> {
-  try {
-    const jar = await cookies(); // Next 16 async Request API
-    return verifySessionToken(jar.get(SESSION_COOKIE)?.value);
-  } catch {
-    return false; // missing secret etc. => treat as logged out
-  }
+  await connection();
+  const jar = await cookies();
+  return verifySessionToken(jar.get(SESSION_COOKIE)?.value, Date.now());
 }

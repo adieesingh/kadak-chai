@@ -61,7 +61,7 @@ if (hasUpstash) {
     },
   };
 } else {
-  // In-memory fallback if Redis credentials are not configured yet (e.g. local dev)
+  // Upstash Redis configure na hone par in-memory local fallback chalao (dev testing ke liye)
   const memoryStore = new Map<string, { count: number; reset: number }>();
 
   function createMemoryLimiter(max: number, windowMs: number): Limiter {
@@ -106,9 +106,7 @@ if (hasUpstash) {
 
 export { loginLimiter, entryLimiter, hasUpstash };
 
-/**
- * Safely extracts client IP address from request headers.
- */
+// Request headers se client ki real IP address nikaalo
 export function getClientIp(req: Request): string {
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) {
@@ -121,10 +119,7 @@ export function getClientIp(req: Request): string {
   return "127.0.0.1";
 }
 
-/**
- * Generates an anonymous, irreversible SHA-256 hash of an IP address.
- * Protects user privacy while allowing rate limiting & abuse tracking.
- */
+// User privacy ke liye IP address ka irreversible SHA-256 hash banao
 export function hashIp(ip: string): string {
   const salt = process.env.ADMIN_SESSION_SECRET ?? "kadak-default-salt";
   return createHash("sha256").update(`${ip}:${salt}`).digest("hex").slice(0, 32);

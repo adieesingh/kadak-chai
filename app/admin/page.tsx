@@ -5,6 +5,7 @@ import { prisma } from "@/app/lib/db";
 import { isAdmin } from "@/app/lib/admin/guard";
 import { STATUSES, CATEGORIES } from "@/app/lib/admin/override";
 import LoginForm from "./LoginForm";
+import LogoutButton from "./LogoutButton";
 import OverrideControls from "./OverrideControls";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false } };
@@ -41,64 +42,82 @@ async function AdminContent({
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 p-4 sm:p-6 text-slate-900">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-bold text-slate-950 mb-4">
-          Entries ({entries.length})
-        </h1>
+    <main className="min-h-screen bg-slate-50 p-3.5 sm:p-6 text-slate-900">
+      <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-950 tracking-tight">
+              Moderation Dashboard
+            </h1>
+            <p className="text-xs text-slate-600 mt-0.5">
+              Showing {entries.length} {entries.length === 1 ? "entry" : "entries"}
+            </p>
+          </div>
+          <LogoutButton />
+        </div>
 
-        <nav className="flex flex-wrap items-center gap-2 mb-6 text-sm">
-          <Link
-            href={qs({ status: undefined })}
-            className={`px-3 py-1 rounded-full border transition ${
-              !status
-                ? "bg-slate-900 text-white border-slate-900 font-semibold"
-                : "bg-white text-slate-800 border-slate-300 hover:bg-slate-100"
-            }`}
-          >
-            All
-          </Link>
-          {STATUSES.map((s) => (
+        <div className="bg-white border border-slate-200 rounded-xl p-3 sm:p-4 shadow-xs space-y-2.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs sm:text-sm">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0 mr-1">
+              Status:
+            </span>
             <Link
-              key={s}
-              href={qs({ status: s })}
-              className={`px-3 py-1 rounded-full border capitalize transition ${
-                status === s
+              href={qs({ status: undefined })}
+              className={`px-3 py-1 rounded-full border transition shrink-0 touch-manipulation ${
+                !status
                   ? "bg-slate-900 text-white border-slate-900 font-semibold"
-                  : "bg-white text-slate-800 border-slate-300 hover:bg-slate-100"
+                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
               }`}
             >
-              {s}
+              All
             </Link>
-          ))}
-          <span className="mx-1 text-slate-400">|</span>
-          {CATEGORIES.map((c) => (
-            <Link
-              key={c}
-              href={qs({ category: category === c ? undefined : c })}
-              className={`px-3 py-1 rounded-full border transition ${
-                category === c
-                  ? "bg-indigo-700 text-white border-indigo-700 font-semibold"
-                  : "bg-white text-slate-800 border-slate-300 hover:bg-slate-100"
-              }`}
-            >
-              {c}
-            </Link>
-          ))}
-        </nav>
+            {STATUSES.map((s) => (
+              <Link
+                key={s}
+                href={qs({ status: s })}
+                className={`px-3 py-1 rounded-full border capitalize transition shrink-0 touch-manipulation ${
+                  status === s
+                    ? "bg-slate-900 text-white border-slate-900 font-semibold"
+                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                }`}
+              >
+                {s.replace("_", " ")}
+              </Link>
+            ))}
+          </div>
 
-        <ul className="space-y-4">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs sm:text-sm border-t border-slate-100 pt-2">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0 mr-1">
+              Category:
+            </span>
+            {CATEGORIES.map((c) => (
+              <Link
+                key={c}
+                href={qs({ category: category === c ? undefined : c })}
+                className={`px-3 py-1 rounded-full border capitalize transition shrink-0 touch-manipulation ${
+                  category === c
+                    ? "bg-indigo-700 text-white border-indigo-700 font-semibold"
+                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                }`}
+              >
+                {c}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <ul className="space-y-3 sm:space-y-4">
           {entries.map((e) => (
             <li
               key={e.id}
-              className="bg-white border border-slate-300 rounded-lg p-4 shadow-sm"
+              className="bg-white border border-slate-200 sm:border-slate-300 rounded-xl sm:rounded-lg p-3.5 sm:p-5 shadow-xs sm:shadow-sm"
             >
-              <div className="flex items-center justify-between gap-2">
-                <strong className="text-base font-bold text-slate-950">
+              <div className="flex items-start justify-between gap-2">
+                <strong className="text-sm sm:text-base font-bold text-slate-950 break-words min-w-0">
                   {e.name}
                 </strong>
                 <span
-                  className={`text-xs font-semibold uppercase px-2.5 py-0.5 rounded-full border ${
+                  className={`text-[10px] sm:text-xs font-semibold uppercase px-2 sm:px-2.5 py-0.5 rounded-full border shrink-0 ${
                     STATUS_BADGE[e.status] ??
                     "bg-slate-200 text-slate-900 border-slate-300"
                   }`}
@@ -107,47 +126,55 @@ async function AdminContent({
                 </span>
               </div>
 
-              <div className="text-xs font-medium text-slate-600 mt-1">
-                {e.city} · {e.contact} ·{" "}
-                {e.createdAt.toISOString().slice(0, 16).replace("T", " ")}
+              <div className="text-[11px] sm:text-xs font-medium text-slate-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span>📍 {e.city}</span>
+                <span>·</span>
+                <span className="break-all">✉️ {e.contact}</span>
+                <span>·</span>
+                <span>🕒 {e.createdAt.toISOString().slice(0, 16).replace("T", " ")}</span>
               </div>
 
-              <p className="my-3 text-sm leading-relaxed text-slate-900">
+              <p className="my-2.5 sm:my-3 text-xs sm:text-sm leading-relaxed text-slate-900 break-words">
                 {e.story}
               </p>
 
-              <div className="text-xs bg-slate-100 border border-slate-200 text-slate-800 rounded px-3 py-2">
-                <span className="font-semibold text-slate-950">AI:</span>{" "}
-                {e.aiDecision ?? "—"} / {e.aiCategory ?? "—"}
+              <div className="text-[11px] sm:text-xs bg-slate-50 border border-slate-200 text-slate-800 rounded-lg p-2.5 sm:p-3 break-words space-y-1">
+                <div>
+                  <span className="font-bold text-slate-950">AI Decision:</span>{" "}
+                  <span className="font-semibold">{e.aiDecision ?? "—"}</span>
+                  {e.aiCategory && (
+                    <span className="text-indigo-700 font-semibold ml-1.5">
+                      [{e.aiCategory}]
+                    </span>
+                  )}
+                </div>
                 {e.aiReason && (
-                  <>
-                    {" "}
-                    · <span className="font-semibold">reason:</span> {e.aiReason}
-                  </>
+                  <div>
+                    <span className="font-semibold text-slate-700">Reason:</span>{" "}
+                    {e.aiReason}
+                  </div>
                 )}
                 {e.aiError && (
-                  <span className="text-rose-700 font-medium">
-                    {" "}
-                    · error: {e.aiError}
-                  </span>
+                  <div className="text-rose-700 font-medium">
+                    <span className="font-semibold">Error:</span> {e.aiError}
+                  </div>
                 )}
                 {e.aiCaption && (
-                  <>
-                    {" "}
-                    · <span className="font-semibold">caption:</span> “
+                  <div className="text-amber-950 font-serif italic pt-1">
+                    <span className="font-sans font-semibold not-italic text-stone-700">Caption:</span> “
                     {e.aiCaption}”
-                  </>
+                  </div>
                 )}
               </div>
 
               {e.overriddenAt && (
-                <div className="text-xs font-medium text-amber-900 bg-amber-50 border border-amber-200 rounded px-2.5 py-1 mt-2">
+                <div className="text-[11px] sm:text-xs font-medium text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 mt-2 break-words">
                   Overridden by {e.overriddenBy}{" "}
                   {e.adminNote && `· ${e.adminNote}`}
                 </div>
               )}
 
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <OverrideControls
                   id={e.id}
                   status={e.status}
@@ -155,7 +182,7 @@ async function AdminContent({
                 />
                 {e.status === "approved" && (
                   <Link
-                    className="text-xs font-semibold underline text-indigo-700 hover:text-indigo-950"
+                    className="text-xs font-bold underline text-indigo-700 hover:text-indigo-950 min-h-[32px] flex items-center touch-manipulation"
                     href={`/entry/${e.slug}`}
                     target="_blank"
                     rel="noreferrer"
@@ -167,8 +194,8 @@ async function AdminContent({
             </li>
           ))}
           {entries.length === 0 && (
-            <li className="bg-white border border-slate-300 rounded-lg p-6 text-center text-sm font-medium text-slate-700">
-              No entries.
+            <li className="bg-white border border-slate-300 rounded-xl p-8 text-center text-sm font-medium text-slate-700">
+              No entries found for this filter.
             </li>
           )}
         </ul>
@@ -181,7 +208,7 @@ export default function AdminPage(props: PageProps<"/admin">) {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen flex items-center justify-center bg-neutral-950 text-neutral-300 text-sm">
+        <main className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-600 text-sm">
           Loading admin...
         </main>
       }

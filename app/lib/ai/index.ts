@@ -28,10 +28,7 @@ function mapError(e: unknown): AiErrorCode {
   return "network_error";
 }
 
-/**
- * NEVER throws. Always resolves to { ok: true, data } or { ok: false, error }.
- * The route saves pending_review on any { ok: false }.
- */
+// Yeh function kabhi throw nahi karta, hamesha safe result return karta hai (error aane pe pending_review)
 export async function moderateStory(
   story: string,
   providerOverride?: AiProvider

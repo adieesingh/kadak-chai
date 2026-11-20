@@ -4,10 +4,7 @@ export type ParseResult =
   | { ok: true; data: AiResponse }
   | { ok: false; error: Extract<AiErrorCode, "empty_response" | "invalid_json" | "invalid_schema">; detail?: string };
 
-/**
- * Models often wrap JSON in ```json fences or add a sentence around it.
- * Pull out the first top-level {...} block.
- */
+// AI ke raw response se pehla valid {...} JSON block extract karo (markdown fences handle karta hai)
 export function extractJson(text: string): string | null {
   const unfenced = text.replace(/```(?:json)?/gi, "");
   const start = unfenced.indexOf("{");
@@ -59,7 +56,7 @@ export function parseAiResponse(raw: unknown): ParseResult {
     };
   }
 
-  // Normalise: rejected entries carry no caption, approved entries carry no reason.
+  // Data clean karo: Rejected me caption nahi aur approved me reason ki zaroorat nahi
   const d = parsed.data;
   return {
     ok: true,

@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
 export async function POST(req: Request) {
-  // 1. Rate limiting check (prevents AI cost exhaustion & DB spam)
+  // 1. Rate limit check: AI cost aur DB spam rokne ke liye
   const clientIp = getClientIp(req);
   const rateLimit = await entryLimiter.limit(clientIp);
 
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
   }
   const input = parsed.data;
 
-  // 3. Contact normalize
+  // 3. Contact normalize karo (email ya 10-digit phone)
   const contact = normalizeContact(input.contact);
   if (!contact) {
     return NextResponse.json(

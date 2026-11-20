@@ -44,7 +44,6 @@ export default function EntryForm() {
       consent: fd.get("consent") === "on",
     };
 
-    // Client-side validation
     const parsed = entryInputSchema.safeParse(values);
     const fieldErrors: Errors = {};
     if (!parsed.success) {
@@ -99,21 +98,21 @@ export default function EntryForm() {
     return (
       <div
         role="status"
-        className="text-center border-2 border-amber-900/30 bg-amber-50/60 rounded-3xl p-8 sm:p-10 shadow-sm space-y-4"
+        className="text-center border-2 border-amber-900/30 bg-amber-50/60 rounded-2xl sm:rounded-3xl p-5 sm:p-10 shadow-sm space-y-4"
       >
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-900 text-white flex items-center justify-center text-3xl shadow-sm">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-2xl bg-amber-900 text-white flex items-center justify-center text-2xl sm:text-3xl shadow-sm">
           ☕
         </div>
-        <h2 className="text-2xl font-extrabold text-stone-900">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-stone-900">
           Chai Story Received!
         </h2>
-        <p className="text-stone-700 max-w-sm mx-auto leading-relaxed text-sm">
+        <p className="text-stone-700 max-w-sm mx-auto leading-relaxed text-xs sm:text-sm">
           {done.message}
         </p>
         {done.shareUrl && (
           <a
             href={done.shareUrl}
-            className="inline-block mt-2 bg-amber-900 hover:bg-amber-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-xs transition"
+            className="inline-flex items-center justify-center min-h-[44px] w-full sm:w-auto mt-2 bg-amber-900 hover:bg-amber-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-xs transition active:scale-98 touch-manipulation text-sm sm:text-base"
           >
             View Your Poster ↗
           </a>
@@ -123,16 +122,16 @@ export default function EntryForm() {
   }
 
   return (
-    <div className="bg-white border-2 border-stone-200/90 rounded-3xl p-6 sm:p-8 shadow-sm">
-      <form onSubmit={onSubmit} noValidate className="space-y-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="bg-white border-2 border-stone-200/90 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-sm">
+      <form onSubmit={onSubmit} noValidate className="space-y-4 sm:space-y-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
           <Field label="Your Name" error={errors.name} icon="👤">
             <input
               name="name"
               placeholder="e.g. Adarsh Sharma"
               autoComplete="name"
               maxLength={60}
-              className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl px-3.5 py-2.5 text-stone-900 text-sm outline-none transition"
+              className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl px-3.5 py-2.5 text-stone-900 text-base sm:text-sm outline-none transition"
               aria-invalid={!!errors.name}
             />
           </Field>
@@ -143,7 +142,7 @@ export default function EntryForm() {
               placeholder="e.g. Varanasi, Lucknow"
               autoComplete="address-level2"
               maxLength={60}
-              className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl px-3.5 py-2.5 text-stone-900 text-sm outline-none transition"
+              className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl px-3.5 py-2.5 text-stone-900 text-base sm:text-sm outline-none transition"
               aria-invalid={!!errors.city}
             />
           </Field>
@@ -156,7 +155,7 @@ export default function EntryForm() {
             autoComplete="email"
             inputMode="email"
             maxLength={100}
-            className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl px-3.5 py-2.5 text-stone-900 text-sm outline-none transition"
+            className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl px-3.5 py-2.5 text-stone-900 text-base sm:text-sm outline-none transition"
             aria-invalid={!!errors.contact}
           />
         </Field>
@@ -181,12 +180,11 @@ export default function EntryForm() {
             value={story}
             placeholder="Tell us what makes your chai break memorable: who you drink it with, the place, the weather, the conversations..."
             onChange={(e) => setStory(e.target.value)}
-            className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl p-3.5 text-stone-900 text-sm outline-none transition leading-relaxed resize-none"
+            className="w-full bg-stone-50 border-2 border-stone-200 focus:border-amber-900 focus:bg-white rounded-xl p-3 sm:p-3.5 text-stone-900 text-base sm:text-sm outline-none transition leading-relaxed resize-none"
             aria-invalid={!!errors.story}
           />
 
-          {/* Character Progress Bar */}
-          <div className="w-full bg-stone-100 rounded-full h-1.5 mt-1 overflow-hidden">
+          <div className="w-full bg-stone-100 rounded-full h-1.5 sm:h-2 mt-1.5 overflow-hidden">
             <div
               className={`h-full transition-all duration-200 ${
                 used > MAX_STORY
@@ -205,18 +203,17 @@ export default function EntryForm() {
             </p>
           )}
 
-          {/* Quick Idea Chips */}
           <div className="mt-3">
             <p className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
               💡 Need inspiration? Click to add:
             </p>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {PROMPT_IDEAS.map((idea) => (
                 <button
                   key={idea}
                   type="button"
                   onClick={() => addPrompt(idea)}
-                  className="text-xs bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 px-2.5 py-1 rounded-lg transition active:scale-95 cursor-pointer"
+                  className="text-xs bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-950 border border-amber-200 px-2.5 py-1.5 rounded-lg transition active:scale-95 cursor-pointer touch-manipulation select-none"
                 >
                   {idea}
                 </button>
@@ -225,16 +222,15 @@ export default function EntryForm() {
           </div>
         </div>
 
-        {/* Consent Checkbox */}
-        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3.5">
+        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 sm:p-3.5 transition active:bg-stone-100/60">
           <label className="flex items-start gap-3 cursor-pointer">
             <input
               type="checkbox"
               name="consent"
-              className="mt-0.5 h-4 w-4 shrink-0 rounded text-amber-900 focus:ring-amber-900 border-stone-300"
+              className="mt-0.5 h-4 w-4 shrink-0 rounded text-amber-900 focus:ring-amber-900 border-stone-300 accent-amber-900 cursor-pointer"
               aria-invalid={!!errors.consent}
             />
-            <span className="text-xs text-stone-700 leading-normal">
+            <span className="text-xs text-stone-700 leading-normal select-none">
               I agree that Kadak Chai Co. may feature my first name and generated poster line publicly.
             </span>
           </label>
@@ -248,7 +244,7 @@ export default function EntryForm() {
         {formError && (
           <div
             role="alert"
-            className="bg-rose-50 border border-rose-300 text-rose-950 text-xs font-semibold p-3 rounded-xl"
+            className="bg-rose-50 border border-rose-300 text-rose-950 text-xs font-semibold p-3 rounded-xl break-words"
           >
             {formError}
           </div>
@@ -257,7 +253,7 @@ export default function EntryForm() {
         <button
           type="submit"
           disabled={busy}
-          className="w-full min-h-12 rounded-xl bg-amber-900 hover:bg-amber-800 active:scale-99 text-white font-bold text-sm sm:text-base shadow-sm transition disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+          className="w-full min-h-[48px] sm:min-h-12 rounded-xl bg-amber-900 hover:bg-amber-800 active:scale-98 text-white font-bold text-sm sm:text-base shadow-sm transition disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2 touch-manipulation px-4 py-3"
         >
           {busy ? (
             <>

@@ -15,7 +15,7 @@ Respond with ONLY a JSON object, no markdown, no extra text:
 {"decision":"approved"|"rejected","reason":string|null,"category":"funny"|"nostalgic"|"wholesome"|"other","caption":string}`;
 
 export function buildUserPrompt(story: string): string {
-  // Strip anything that could close our delimiter early.
+  // Prompt injection rokne ke liye closing story tags filter karo
   const safe = story.replace(/<\/?story>/gi, "");
   return `<story>\n${safe}\n</story>`;
 }

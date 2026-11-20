@@ -7,7 +7,7 @@ const words = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
 
 export const overrideSchema = z.object({
   status: z.enum(STATUSES),
-  // only needed when approving an entry that has no AI caption (e.g. AI failed)
+  // Agar bina AI caption wali entry approve karni ho tabhi manual caption zaroori hai
   caption: z
     .string()
     .trim()
@@ -23,10 +23,7 @@ export type OverrideResult =
   | { ok: true; data: { status: string; aiCaption?: string; adminNote: string | null } }
   | { ok: false; error: "caption_required" };
 
-/**
- * Pure decision logic for an admin override.
- * An approved entry MUST have a caption, otherwise its public page would 404.
- */
+// Admin override logic: Approved entry me poster caption hona lazmi hai warna 404 aayega
 export function resolveOverride(
   current: { aiCaption: string | null },
   input: OverrideInput
