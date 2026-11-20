@@ -34,11 +34,12 @@ export function createSessionToken(now = Date.now()): string {
   return `${exp}.${sign(exp)}`;
 }
 
-export function verifySessionToken(token: string | undefined | null, now = Date.now()): boolean {
+export function verifySessionToken(token: string | undefined | null, now?: number): boolean {
   if (!token) return false;
+  const currentTime = now ?? Date.now();
   const [exp, sig, extra] = token.split(".");
   if (!exp || !sig || extra !== undefined) return false;
   if (!/^\d+$/.test(exp)) return false;
   if (!safeEqual(sig, sign(exp))) return false;
-  return Number(exp) > now;
+  return Number(exp) > currentTime;
 }
