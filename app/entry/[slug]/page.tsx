@@ -19,9 +19,20 @@ export async function generateMetadata(
   const { slug } = await props.params;
   const entry = await getEntry(slug);
   if (!entry) return { title: "Not found | Kadak Chai Co." };
+  const author = firstName(entry.name);
   return {
-    title: `${firstName(entry.name)}'s #MyChaiBreak | Kadak Chai Co.`,
+    title: `${author}'s #MyChaiBreak | Kadak Chai Co.`,
     description: entry.aiCaption ?? "",
+    openGraph: {
+      title: `${author}'s Chai Break Poster | Kadak Chai Co.`,
+      description: `“${entry.aiCaption}” — #MyChaiBreak`,
+      type: "article",
+    },
+    twitter: {
+      card: "summary",
+      title: `${author}'s Chai Break Poster | Kadak Chai Co.`,
+      description: `“${entry.aiCaption}”`,
+    },
     robots: { index: false },
   };
 }

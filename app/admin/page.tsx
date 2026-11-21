@@ -42,31 +42,35 @@ async function AdminContent({
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 p-3.5 sm:p-6 text-slate-900">
+    <main className="min-h-screen bg-[#FAF7F2] p-3.5 sm:p-6 text-stone-900">
       <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 bg-white border border-stone-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs">
           <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-950 tracking-tight">
+            <div className="inline-flex items-center gap-1.5 bg-amber-100/90 border border-amber-300 text-amber-950 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold tracking-wide uppercase">
+              <span>☕</span>
+              <span>Admin Portal</span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-black text-stone-950 tracking-tight mt-1">
               Moderation Dashboard
             </h1>
-            <p className="text-xs text-slate-600 mt-0.5">
+            <p className="text-xs text-stone-600 mt-0.5">
               Showing {entries.length} {entries.length === 1 ? "entry" : "entries"}
             </p>
           </div>
           <LogoutButton />
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-3 sm:p-4 shadow-xs space-y-2.5">
+        <div className="bg-white border border-stone-200 rounded-2xl p-3.5 sm:p-4 shadow-2xs space-y-2.5">
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs sm:text-sm">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0 mr-1">
+            <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider shrink-0 mr-1">
               Status:
             </span>
             <Link
               href={qs({ status: undefined })}
               className={`px-3 py-1 rounded-full border transition shrink-0 touch-manipulation ${
                 !status
-                  ? "bg-slate-900 text-white border-slate-900 font-semibold"
-                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  ? "bg-amber-950 text-white border-amber-950 font-bold shadow-2xs"
+                  : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100 font-medium"
               }`}
             >
               All
@@ -77,8 +81,8 @@ async function AdminContent({
                 href={qs({ status: s })}
                 className={`px-3 py-1 rounded-full border capitalize transition shrink-0 touch-manipulation ${
                   status === s
-                    ? "bg-slate-900 text-white border-slate-900 font-semibold"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    ? "bg-amber-950 text-white border-amber-950 font-bold shadow-2xs"
+                    : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100 font-medium"
                 }`}
               >
                 {s.replace("_", " ")}
@@ -86,8 +90,8 @@ async function AdminContent({
             ))}
           </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs sm:text-sm border-t border-slate-100 pt-2">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0 mr-1">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-xs sm:text-sm border-t border-stone-100 pt-2.5">
+            <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider shrink-0 mr-1">
               Category:
             </span>
             {CATEGORIES.map((c) => (
@@ -96,8 +100,8 @@ async function AdminContent({
                 href={qs({ category: category === c ? undefined : c })}
                 className={`px-3 py-1 rounded-full border capitalize transition shrink-0 touch-manipulation ${
                   category === c
-                    ? "bg-indigo-700 text-white border-indigo-700 font-semibold"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    ? "bg-amber-900 text-white border-amber-900 font-bold shadow-2xs"
+                    : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100 font-medium"
                 }`}
               >
                 {c}
@@ -110,23 +114,23 @@ async function AdminContent({
           {entries.map((e) => (
             <li
               key={e.id}
-              className="bg-white border border-slate-200 sm:border-slate-300 rounded-xl sm:rounded-lg p-3.5 sm:p-5 shadow-xs sm:shadow-sm"
+              className="bg-white border-2 border-stone-200/90 rounded-2xl p-4 sm:p-5 shadow-xs"
             >
               <div className="flex items-start justify-between gap-2">
-                <strong className="text-sm sm:text-base font-bold text-slate-950 break-words min-w-0">
+                <strong className="text-sm sm:text-base font-bold text-stone-950 break-words min-w-0">
                   {e.name}
                 </strong>
                 <span
-                  className={`text-[10px] sm:text-xs font-semibold uppercase px-2 sm:px-2.5 py-0.5 rounded-full border shrink-0 ${
+                  className={`text-[10px] sm:text-xs font-bold uppercase px-2.5 py-0.5 rounded-full border shrink-0 ${
                     STATUS_BADGE[e.status] ??
-                    "bg-slate-200 text-slate-900 border-slate-300"
+                    "bg-stone-200 text-stone-900 border-stone-300"
                   }`}
                 >
-                  {e.status}
+                  {e.status.replace("_", " ")}
                 </span>
               </div>
 
-              <div className="text-[11px] sm:text-xs font-medium text-slate-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <div className="text-[11px] sm:text-xs font-medium text-stone-600 mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
                 <span>📍 {e.city}</span>
                 <span>·</span>
                 <span className="break-all">✉️ {e.contact}</span>
@@ -134,23 +138,23 @@ async function AdminContent({
                 <span>🕒 {e.createdAt.toISOString().slice(0, 16).replace("T", " ")}</span>
               </div>
 
-              <p className="my-2.5 sm:my-3 text-xs sm:text-sm leading-relaxed text-slate-900 break-words">
+              <p className="my-2.5 sm:my-3 text-xs sm:text-sm leading-relaxed text-stone-900 break-words">
                 {e.story}
               </p>
 
-              <div className="text-[11px] sm:text-xs bg-slate-50 border border-slate-200 text-slate-800 rounded-lg p-2.5 sm:p-3 break-words space-y-1">
+              <div className="text-[11px] sm:text-xs bg-amber-50/50 border border-amber-200/70 text-stone-800 rounded-xl p-3 break-words space-y-1">
                 <div>
-                  <span className="font-bold text-slate-950">AI Decision:</span>{" "}
+                  <span className="font-bold text-amber-950">AI Decision:</span>{" "}
                   <span className="font-semibold">{e.aiDecision ?? "—"}</span>
                   {e.aiCategory && (
-                    <span className="text-indigo-700 font-semibold ml-1.5">
+                    <span className="text-amber-900 font-bold ml-1.5">
                       [{e.aiCategory}]
                     </span>
                   )}
                 </div>
                 {e.aiReason && (
                   <div>
-                    <span className="font-semibold text-slate-700">Reason:</span>{" "}
+                    <span className="font-semibold text-stone-700">Reason:</span>{" "}
                     {e.aiReason}
                   </div>
                 )}
@@ -168,13 +172,13 @@ async function AdminContent({
               </div>
 
               {e.overriddenAt && (
-                <div className="text-[11px] sm:text-xs font-medium text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 mt-2 break-words">
-                  Overridden by {e.overriddenBy}{" "}
-                  {e.adminNote && `· ${e.adminNote}`}
+                <div className="text-[11px] sm:text-xs font-medium text-amber-900 bg-amber-100/70 border border-amber-300/80 rounded-xl px-3 py-1.5 mt-2.5 break-words">
+                  Overridden by <strong>{e.overriddenBy}</strong>{" "}
+                  {e.adminNote && `· “${e.adminNote}”`}
                 </div>
               )}
 
-              <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="mt-3.5 pt-3 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <OverrideControls
                   id={e.id}
                   status={e.status}
@@ -182,19 +186,19 @@ async function AdminContent({
                 />
                 {e.status === "approved" && (
                   <Link
-                    className="text-xs font-bold underline text-indigo-700 hover:text-indigo-950 min-h-[32px] flex items-center touch-manipulation"
+                    className="text-xs font-bold underline text-amber-900 hover:text-amber-950 min-h-[32px] flex items-center touch-manipulation"
                     href={`/entry/${e.slug}`}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    View public page ↗
+                    View public poster page ↗
                   </Link>
                 )}
               </div>
             </li>
           ))}
           {entries.length === 0 && (
-            <li className="bg-white border border-slate-300 rounded-xl p-8 text-center text-sm font-medium text-slate-700">
+            <li className="bg-white border-2 border-stone-200 rounded-2xl p-8 text-center text-sm font-medium text-stone-600">
               No entries found for this filter.
             </li>
           )}

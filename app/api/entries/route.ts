@@ -26,12 +26,20 @@ export async function POST(req: Request) {
     );
   }
 
+  const contentType = req.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    return NextResponse.json(
+      { error: "Invalid Content-Type, expected application/json" },
+      { status: 415 }
+    );
+  }
+
   let body: unknown;
-        try {
-            body = await req.json();  
-        } catch {
-            return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-        }
+  try {
+    body = await req.json();  
+  } catch {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
 
         const parsed = entryInputSchema.safeParse(body);
          if (!parsed.success) {

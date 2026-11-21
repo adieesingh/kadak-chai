@@ -9,13 +9,13 @@ services:
       - "3000:3000"
     environment:
       - DATABASE_URL=postgresql://kadak:kadakpass@db:5432/kadakchai?schema=public
-      - AI_PROVIDER=${AI_PROVIDER:-mock}
+      - AI_PROVIDER=${AI_PROVIDER:-}
       - AI_BASE_URL=${AI_BASE_URL:-}
       - AI_API_KEY=${AI_API_KEY:-}
       - AI_MODEL=${AI_MODEL:-}
-      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-change-me}
-      - ADMIN_SESSION_SECRET=${ADMIN_SESSION_SECRET:-replace-with-a-long-random-string}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
+      - ADMIN_SESSION_SECRET=${ADMIN_SESSION_SECRET:-}
       - UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL:-}
       - UPSTASH_REDIS_REST_TOKEN=${UPSTASH_REDIS_REST_TOKEN:-}
     depends_on:
