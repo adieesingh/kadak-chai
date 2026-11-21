@@ -61,17 +61,19 @@ if (hasUpstash) {
     },
   };
 } else {
-  // Upstash Redis configure na hone par in-memory local fallback chalao (dev testing ke liye)
+  // In-memory fallback if Redis credentials are not configured yet (e.g. local dev)
   const memoryStore = new Map<string, { count: number; reset: number }>();
 
-  function createMemoryLimiter(max: number, windowMs: number): Limiter {
+  function createMemoryLimiter(prefix: string, max: number, windowMs: number): Limiter {
     return {
       async limit(identifier: string) {
         const now = Date.now();
-        const record = memoryStore.get(identifier);
+        // Namespace the key so the login and entry limiters never share a counter.
+        const key = `${prefix}:${identifier}`;
+        const record = memoryStore.get(key);
 
         if (!record || now > record.reset) {
-          memoryStore.set(identifier, { count: 1, reset: now + windowMs });
+          memoryStore.set(key, { count: 1, reset: now + windowMs });
           return {
             success: true,
             limit: max,
@@ -100,13 +102,15 @@ if (hasUpstash) {
     };
   }
 
-  loginLimiter = createMemoryLimiter(5, 10 * 60 * 1000);
-  entryLimiter = createMemoryLimiter(5, 60 * 60 * 1000);
+  loginLimiter = createMemoryLimiter("login", 5, 10 * 60 * 1000);
+  entryLimiter = createMemoryLimiter("entry", 5, 60 * 60 * 1000);
 }
 
 export { loginLimiter, entryLimiter, hasUpstash };
 
-// Request headers se client ki real IP address nikaalo
+/**
+ * Safely extracts client IP address from request headers.
+ */
 export function getClientIp(req: Request): string {
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) {
@@ -119,7 +123,10 @@ export function getClientIp(req: Request): string {
   return "127.0.0.1";
 }
 
-// User privacy ke liye IP address ka irreversible SHA-256 hash banao
+/**
+ * Generates an anonymous, irreversible SHA-256 hash of an IP address.
+ * Protects user privacy while allowing rate limiting & abuse tracking.
+ */
 export function hashIp(ip: string): string {
   const salt = process.env.ADMIN_SESSION_SECRET ?? "kadak-default-salt";
   return createHash("sha256").update(`${ip}:${salt}`).digest("hex").slice(0, 32);
