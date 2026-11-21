@@ -2,7 +2,7 @@
   "name": "kadak-chai",
   "version": "0.1.0",
   "private": true,
-  "type":"module",
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "prisma migrate deploy && prisma generate && next build",
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",
-    "@types/node": "^20",
+    "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

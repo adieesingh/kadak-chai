@@ -73,7 +73,7 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={busy}
-            className="w-full min-h-[44px] bg-slate-950 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-lg text-sm sm:text-base shadow-sm transition active:scale-98 disabled:opacity-50 cursor-pointer touch-manipulation"
+            className="w-full min-h-11 bg-slate-950 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-lg text-sm sm:text-base shadow-sm transition active:scale-98 disabled:opacity-50 cursor-pointer touch-manipulation"
           >
             {busy ? "Signing in..." : "Sign in to Dashboard"}
           </button>
