@@ -1,6 +1,28 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === "production";
+
+// Pragmatic CSP: Next.js injects inline scripts/styles, so 'unsafe-inline' is needed
+// unless you set up nonces. Everything else is locked to our own origin.
+// Dev mode also needs 'unsafe-eval' for React's refresh tooling.
+const csp = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "connect-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join("; ");
+
 const securityHeaders = [
+  {
+    key: "Content-Security-Policy",
+    value: csp,
+  },
   {
     key: "X-DNS-Prefetch-Control",
     value: "on",

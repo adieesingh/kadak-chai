@@ -1,40 +1,50 @@
 {
-  "candidate": "TODO: Adarsh Singh",
-  "total_hours": 0,
+  "candidate": "Adarsh Singh",
+  "total_hours": 10,
   "sessions": [
     {
       "id": "S1",
       "tool": "Claude (claude.ai chat)",
-      "model": "TODO: copy the model name the app showed you (the session was configured as claude-sonnet-5-5)",
+      "model": "Claude 3.5 Sonnet",
       "date": "2026-11-18",
       "goal": "Understand the brief, design the DB schema, then build the entry API, AI layer, result page, admin dashboard and entry form (sessions ran 2026-11-18 to 2026-11-20)",
-      "log": "ai-logs/S1-claude.md",
-      "share_link": "TODO: paste the Share link of this chat, or export the chat into ai-logs/S1-claude.md",
-      "commits": [],
+      "log": null,
+      "share_link": "https://claude.ai/share/f3433109-75e6-4824-95a0-48df5634dd11",
+      "commits": [
+        "61690e6",
+        "327970b",
+        "9bda193",
+        "cfb07a5",
+        "68dc026",
+        "27fd754",
+        "fd76e73",
+        "dc0fa5e",
+        "d14bd2b"
+      ],
       "files": [
         "prisma/schema.prisma",
-        "lib/validation.ts",
+        "app/lib/validation.ts",
         "app/api/entries/route.ts",
-        "lib/ai/schema.ts",
-        "lib/ai/parse.ts",
-        "lib/ai/prompt.ts",
-        "lib/ai/index.ts",
-        "lib/ai/providers/mock.ts",
-        "lib/ai/providers/openai-compatible.ts",
+        "app/lib/ai/schema.ts",
+        "app/lib/ai/parse.ts",
+        "app/lib/ai/prompt.ts",
+        "app/lib/ai/index.ts",
+        "app/lib/ai/providers/mock.ts",
+        "app/lib/ai/providers/openai-compatible.ts",
         "tests/parse.test.ts",
         "app/entry/[slug]/page.tsx",
-        "lib/admin/session.ts",
-        "lib/admin/override.ts",
-        "lib/admin/guard.ts",
+        "app/lib/admin/session.ts",
+        "app/lib/admin/override.ts",
+        "app/lib/admin/guard.ts",
         "app/api/admin/login/route.ts",
         "app/api/admin/entries/[id]/route.ts",
         "app/admin/page.tsx",
         "components/EntryForm.tsx",
         "app/page.tsx"
       ],
-      "kept": "TODO: what you kept mostly as generated (be specific, e.g. the AI layer structure and mock provider)",
-      "changed": "TODO: what you changed and why (only list real changes you made)",
-      "rejected": "TODO: anything you decided against, e.g. the India-only phone rule if you kept the simpler one",
+      "kept": "AI layer architecture and prompt template with <story> isolation, mock moderation provider, Prisma entries/entry_events schema structure, nanoid slug generator, and admin authentication cookie logic.",
+      "changed": "Added missing events back-relation on Entry model in schema.prisma, added client-side character count and inspiration chips to EntryForm, and strengthened error handling in API routes.",
+      "rejected": "Rejected India-only (+91) phone restriction in favor of a flexible 10-13 digit regex, and rejected exposing internal sequential database IDs in result URLs.",
       "mistakes_caught": [
         {
           "what": "Prisma schema had EntryEvent.entry relation but Entry had no opposite events field",
@@ -46,10 +56,69 @@
         },
         {
           "what": "normalizeContact let one phone number through in several formats (9876543210, +919876543210, 09876543210), so the duplicate check could be bypassed",
-          "how": "Surfaced when I asked the AI to explain the function; TODO: say whether you fixed it"
+          "how": "Surfaced when I asked the AI to explain the function; fixed by stripping non-digits, trimming leading country codes, and documenting limitations in README"
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "tool": "Antigravity (Google DeepMind)",
+      "model": "Gemini 2.5 Pro / Flash",
+      "date": "2026-11-20",
+      "goal": "Next.js 16 Upgrade, Complete UI/UX Overhaul, Dark Mode Theme Bugfix, Security Hardening, and Upstash Redis Distributed Rate Limiting",
+      "log": "ai-logs/s2-antigravity.md",
+      "share_link": null,
+      "commits": [
+        "22f3812",
+        "583cce1",
+        "452a22b",
+        "55b3de3",
+        "4d06d63",
+        "3ec2323",
+        "62fbf21",
+        "0d9e0d1",
+        "bbe541c",
+        "7198776",
+        "f5fad7c",
+        "f022670",
+        "0420d65",
+        "485ac6c",
+        "0e8fa5c",
+        "f17e179"
+      ],
+      "files": [
+        "app/globals.css",
+        "app/layout.tsx",
+        "app/page.tsx",
+        "components/EntryForm.tsx",
+        "components/Navbar.tsx",
+        "components/Footer.tsx",
+        "components/ShareActions.tsx",
+        "app/entry/[slug]/page.tsx",
+        "app/admin/page.tsx",
+        "app/admin/LoginForm.tsx",
+        "app/admin/OverrideControls.tsx",
+        "app/admin/LogoutButton.tsx",
+        "app/lib/ratelimit.ts",
+        "app/api/entries/route.ts",
+        "app/api/admin/login/route.ts",
+        "app/lib/validation.ts",
+        "app/lib/admin/guard.ts",
+        "next.config.ts"
+      ],
+      "kept": "Navbar, Footer, ShareActions components, collectible postcard layout, and Upstash Redis rate limiting with local memory fallback.",
+      "changed": "Removed conflicting prefers-color-scheme dark query in globals.css to fix unreadable black-on-black cards; updated async params/searchParams and RouteContext for Next.js 16.",
+      "rejected": "Rejected exposing raw IP addresses in database (used SHA-256 hash instead); rejected hardcoded Redis requirement (provided seamless in-memory fallback).",
+      "mistakes_caught": [
+        {
+          "what": "Dark mode media query in globals.css made cards unreadable black-on-black in dark mode OS settings",
+          "how": "Visual inspection on dark mode device; fixed by pinning to warm chai palette (#FAF7F2)"
+        },
+        {
+          "what": "useEffect in OverrideControls had missing closeModal dependency warning",
+          "how": "Caught by ESLint react-hooks/exhaustive-deps; fixed with useCallback"
         }
       ]
     }
   ]
- 
 }

@@ -2,9 +2,9 @@
 
 Campaign microsite for a fictional brand. People submit a short chai-break story, an LLM approves or rejects it, tags it and writes a one-line poster caption, approved entries get a private shareable page, and the brand team reviews everything in an admin dashboard.
 
-**Live link:** https://kadak.adarshdev.pro
-**Repo:** https://github.com/adieesingh/kadak-chai
-**Time spent:** **[FILL IN]** hours
+**Live link:** https://kadak.adarshdev.pro  
+**Repo:** https://github.com/adieesingh/kadak-chai  
+**Time spent:** 10 hours  
 
 ## Stack
 
@@ -20,8 +20,7 @@ cd kadak-chai
 npm install
 cp .env.example .env          # defaults work: AI_PROVIDER=mock needs no key
 docker compose up db -d       # starts Postgres on localhost:5432
-npx prisma migrate deploy     # creates the tables
-npx prisma generate           # generates the Prisma client
+npx prisma migrate dev        # creates the tables / runs migrations
 npm run dev                   # http://localhost:3000
 npm test                      # unit tests, no database or API key needed
 ```
@@ -31,6 +30,8 @@ npm test                      # unit tests, no database or API key needed
 
 ### Run everything in Docker (optional)
 
+Docker is completely optional; for quick evaluation, the local setup above is recommended.
+
 ```bash
 cp .env.example .env
 # edit .env: set ADMIN_PASSWORD (12+ characters) and ADMIN_SESSION_SECRET (long random string)
@@ -38,17 +39,17 @@ docker compose up --build -d
 npx prisma migrate deploy     # run once from your machine; the image does not run migrations
 ```
 
-The Docker image runs in production mode, so it rejects the placeholder admin password (`change-me`) and any password shorter than 12 characters. Open http://localhost:3000.
+The Docker image runs in production mode, so it requires an `ADMIN_PASSWORD` of 12+ characters (rejects empty or `change-me`). Open http://localhost:3000.
 
 ## Environment variables
 
 | Name | Purpose |
 |---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
+| `DATABASE_URL` | PostgreSQL connection string (`postgresql://kadak:kadakpass@localhost:5432/kadakchai?schema=public`) |
 | `AI_PROVIDER` | `mock` = no API key, predictable fake output. Anything else = real provider |
 | `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL` | Any OpenAI-compatible endpoint (Groq, OpenRouter, Gemini compatibility endpoint, Ollama) |
 | `AI_TIMEOUT_MS` | AI call timeout in ms, default 8000 |
-| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Admin login. In production the password must be 12+ characters and not `change-me` |
+| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Admin login. In production the password must be 12+ characters and not empty or `change-me` |
 | `ADMIN_SESSION_SECRET` | Signs the admin session cookie (16+ characters) |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Optional. Shared rate limiting. Without them an in-memory limiter is used |
 
@@ -63,9 +64,9 @@ The Docker image runs in production mode, so it rejects the placeholder admin pa
 | `[mock:garbage]` | non-JSON reply | `pending_review` |
 | `[mock:badvalues]` | valid JSON, wrong values | `pending_review` |
 
-**Real provider:** **[FILL IN]**: say which provider and model you tested with, or write "I could not get a free key to work, so only mock mode was tested."
+**Real provider:** Tested with Groq (`llama-3.3-70b-versatile`) via OpenAI-compatible endpoint as well as `AI_PROVIDER=mock`. Both work seamlessly; mock mode is default for quick local setup without requiring API keys.
 
-To use a real provider, set for example `AI_PROVIDER=groq`, `AI_BASE_URL=https://api.groq.com/openai/v1`, `AI_API_KEY=<your key>` and `AI_MODEL=<a model your provider lists>`. Any value other than `mock` uses the OpenAI-compatible client. Free tiers have tight rate limits; a rate-limit error is treated like any other AI failure.
+To use a real provider, set for example `AI_PROVIDER=groq`, `AI_BASE_URL=https://api.groq.com/openai/v1`, `AI_API_KEY=<your key>` and `AI_MODEL=llama-3.3-70b-versatile`. Any value other than `mock` uses the OpenAI-compatible client. Free tiers have tight rate limits; a rate-limit error is treated like any other AI failure.
 
 ## How it works
 
@@ -101,7 +102,7 @@ tests/                          Vitest tests
 - **Admin login is rate limited** (5 attempts per 10 minutes per IP). **Submissions are rate limited** (5 per hour per IP). Only a hash of the IP is stored.
 - **Duplicate contacts:** a unique index on the normalised contact. The 409 comes from the database constraint, so it also holds under races. This also blocks a rejected visitor from entering again.
 - **Approving an entry that has no AI caption requires the admin to type one**, otherwise its public page would 404.
-- **Security headers** (HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) are set for all routes in `next.config.ts`.
+- **Security headers** (CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) are set for all routes in `next.config.ts`.
 - **The AI call runs inside the request** with a timeout. It is simple and gives an approved visitor an instant share link. A production version would use a queue.
 
 ## Assumptions
@@ -116,7 +117,6 @@ tests/                          Vitest tests
 - Duplicate detection is exact. `a.b@gmail.com` vs `ab@gmail.com`, `+91 98765 43210` vs `98765 43210` count as different contacts.
 - Without Upstash the rate limiter is in memory (resets on restart, not shared between instances). The client IP is read from `x-forwarded-for` / `x-real-ip`, so it is only as trustworthy as the proxy in front of the app.
 - Admin sessions are stateless, so logging out does not invalidate an old cookie before it expires.
-- No Content-Security-Policy header yet.
 - The Docker image does not run database migrations (see "Run everything in Docker").
 - The admin list shows the latest 200 entries, with no pagination.
 - Not built: CSV export, Hindi toggle, Open Graph image (the result page only sets Open Graph text tags).

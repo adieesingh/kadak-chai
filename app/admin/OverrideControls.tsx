@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 type Status = "approved" | "rejected" | "pending_review";
@@ -52,11 +52,11 @@ export default function OverrideControls({
     setFormError("");
   }
 
-  function closeModal() {
+  const closeModal = useCallback(() => {
     if (busy) return;
     setModalTarget(null);
     setFormError("");
-  }
+  }, [busy]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -66,7 +66,7 @@ export default function OverrideControls({
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [modalTarget, busy]);
+  }, [modalTarget, busy, closeModal]);
 
   async function handleConfirm(e: React.FormEvent) {
     e.preventDefault();
