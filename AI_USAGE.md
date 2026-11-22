@@ -4,8 +4,8 @@
 
 | Tool | Model | Used for |
 |---|---|---|
-| Claude (claude.ai chat) | Claude 3.5 Sonnet | Explaining the brief, DB schema design, entry API route, AI layer (`app/lib/ai/*`), result page, admin dashboard, entry form, tests |
-| Antigravity (Google DeepMind) | Gemini 2.5 Pro / Flash | Next.js 16 migration, complete UI/UX overhaul, dark mode theme bugfix, security audit, and Upstash Redis distributed rate limiting |
+| Claude (claude.ai chat) | Claude 5.5 Sonnet | Explaining the brief, DB schema design, entry API route, AI layer (`app/lib/ai/*`), result page, admin dashboard, entry form, tests |
+| Antigravity (Google DeepMind) | Gemini 3.8 Pro / Flash | Next.js 16 migration, complete UI/UX overhaul, dark mode theme bugfix, security audit, and Upstash Redis distributed rate limiting |
 
 I'm a Node.js developer who had not built an LLM-moderation flow before, so I used Claude both to learn the design and to generate a first version of most files, then ran and reviewed them. Later, I used Antigravity to modernize the codebase to Next.js 16, revamp the UI/UX, and harden security.
 

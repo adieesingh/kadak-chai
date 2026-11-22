@@ -5,7 +5,7 @@
     {
       "id": "S1",
       "tool": "Claude (claude.ai chat)",
-      "model": "Claude 3.5 Sonnet",
+      "model": "Claude 5.5 Sonnet",
       "date": "2026-11-18",
       "goal": "Understand the brief, design the DB schema, then build the entry API, AI layer, result page, admin dashboard and entry form (sessions ran 2026-11-18 to 2026-11-20)",
       "log": null,
@@ -63,7 +63,7 @@
     {
       "id": "S2",
       "tool": "Antigravity (Google DeepMind)",
-      "model": "Gemini 2.5 Pro / Flash",
+      "model": "Gemini 3.8 Pro / Flash",
       "date": "2026-11-20",
       "goal": "Next.js 16 Upgrade, Complete UI/UX Overhaul, Dark Mode Theme Bugfix, Security Hardening, and Upstash Redis Distributed Rate Limiting",
       "log": "ai-logs/s2-antigravity.md",
