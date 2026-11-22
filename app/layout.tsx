@@ -18,6 +18,13 @@ export const metadata: Metadata = {
   title: "#MyChaiBreak | Kadak Chai Co.",
   description:
     "Share your favourite chai break story and let AI brew your own custom poster line.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
